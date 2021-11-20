@@ -51,6 +51,7 @@ public class TimeScheduler {
     class TimeSchedulerThread extends Thread {
 
         AtomicBoolean halted = new AtomicBoolean(false);
+
         private final Object sigLock = new Object();
 
         private final Random random = new Random(System.currentTimeMillis());
@@ -100,7 +101,13 @@ public class TimeScheduler {
             return idleWaitTime - random.nextInt(idleWaitVariablness);
         }
 
+        public void shutdown() {
+            halted.set(true);
+        }
     }
 
 
+    public void shutdown() {
+        scheduler.shutdown();
+    }
 }
