@@ -1,6 +1,8 @@
 package com.github.krystalics.scheduler.storage;
 
-import com.github.krystalics.scheduler.core.Job;
+import com.github.krystalics.scheduler.core.job.Job;
+import com.github.krystalics.scheduler.core.job.JobContext;
+import com.github.krystalics.scheduler.core.job.JobDetail;
 import com.github.krystalics.scheduler.core.trigger.Trigger;
 
 import java.util.List;
@@ -13,20 +15,29 @@ import java.util.List;
 public interface Storage {
     /**
      * 存储job
+     *
      * @param job
      * @return
      */
-    boolean storeJob(Job job);
+    boolean storeJob(JobDetail job);
 
     /**
      * 存储Trigger
+     *
      * @param trigger
      * @return
      */
     boolean storeTrigger(Trigger trigger);
 
+    boolean storeJobAndTrigger(JobDetail job, Trigger trigger);
 
-    List<Job> getJobs();
+
+    List<JobDetail> getJobs();
 
     List<Trigger> getTriggers();
+
+    List<JobContext> getJobContexts();
+
+    boolean setJobContexts(List<JobContext> contexts);
+
 }
