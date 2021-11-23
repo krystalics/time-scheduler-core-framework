@@ -8,6 +8,7 @@ import java.util.Date;
  * @description
  */
 public interface Trigger {
+
     Date getNextFireTime();
 
     void updateNextFireTime(Date nextFireTime);

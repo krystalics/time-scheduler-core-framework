@@ -6,7 +6,6 @@ import com.github.krystalics.scheduler.core.job.JobContext;
 import com.github.krystalics.scheduler.core.job.JobDetail;
 import com.github.krystalics.scheduler.core.trigger.Trigger;
 import com.github.krystalics.scheduler.lock.DistributedLock;
-import com.github.krystalics.scheduler.lock.DistributedLockFactory;
 import com.github.krystalics.scheduler.storage.Storage;
 import lombok.SneakyThrows;
 import org.slf4j.Logger;
@@ -28,6 +27,7 @@ public class TimeScheduler {
     private static final Logger logger = LoggerFactory.getLogger(TimeScheduler.class);
 
     protected Storage storage;
+    protected DistributedLock lock;
 
     TimeSchedulerThread scheduler;
 
@@ -72,8 +72,7 @@ public class TimeScheduler {
             logger.info("scheduler start");
 
             while (!halted.get()) {
-                final DistributedLock distributedLock = DistributedLockFactory.findDistributedLock().get();
-                distributedLock.lock();
+                lock.lock();
                 logger.info("scheduler get lock");
 
                 final List<JobContext> jobContexts = storage.getJobContexts();
@@ -131,5 +130,9 @@ public class TimeScheduler {
 
     public void shutdown() {
         scheduler.shutdown();
+    }
+
+    public void setLock(DistributedLock lock) {
+        this.lock = lock;
     }
 }
