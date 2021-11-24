@@ -11,7 +11,6 @@ import lombok.SneakyThrows;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
@@ -29,11 +28,12 @@ public class TimeScheduler {
     protected Storage storage;
     protected DistributedLock lock;
 
-    TimeSchedulerThread scheduler;
-
-    public void setStorageType(Storage storage) {
+    public TimeScheduler(Storage storage, DistributedLock lock) {
         this.storage = storage;
+        this.lock = lock;
     }
+
+    TimeSchedulerThread scheduler;
 
     public void start(JobDetail job, Trigger trigger) {
         storage.storeJobAndTrigger(job, trigger);
@@ -69,32 +69,27 @@ public class TimeScheduler {
         @SneakyThrows
         @Override
         public void run() {
-            logger.info("scheduler start");
+            logger.info("time scheduler start!!");
 
             while (!halted.get()) {
                 lock.lock();
                 logger.info("scheduler get lock");
 
-                final List<JobContext> jobContexts = storage.getJobContexts();
-                final List<JobContext> newContexts = new ArrayList<>();
-
                 Date pollTime = new Date();
-                for (JobContext jobContext : jobContexts) {
-                    final Trigger trigger = jobContext.getTrigger();
-                    final Date nextFireTime = trigger.getNextFireTime();
+                final List<JobContext> jobContexts = storage.getFiredJobContexts(pollTime);
 
-                    if (nextFireTime == null || pollTime.after(nextFireTime)) {
+                for (JobContext jobContext : jobContexts) {
+                    if (!halted.get()) {
                         final Class<?> jobClass = jobContext.getJobDetail().getJobClass();
                         final Job job = (Job) jobClass.newInstance();
+
                         job.execute(jobContext);
-
-                        trigger.updateNextFireTime(nextFireTime);
-                        jobContext.setTrigger(trigger);
-
+                        //执行完成后，更新trigger的nextFiredTime
+                        final Trigger trigger = jobContext.getTrigger();
+                        trigger.updateNextFireTime(trigger.getNextFireTime());
+                        storage.updateTrigger(jobContext.getJobDetail(), trigger);
                     }
-                    newContexts.add(jobContext);
                 }
-                storage.setJobContexts(newContexts);
 
 
                 long now = System.currentTimeMillis();

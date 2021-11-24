@@ -5,7 +5,12 @@ import com.github.krystalics.scheduler.core.job.JobDetail;
 import com.github.krystalics.scheduler.core.trigger.Trigger;
 
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author linjiabao001
@@ -14,47 +19,48 @@ import java.util.List;
  */
 public class RamJobStorage implements Storage {
 
-    private static final List<JobDetail> JOBS = new ArrayList<>();
-    private static final List<Trigger> TRIGGERS = new ArrayList<>();
-    private static final List<JobContext> JOB_CONTEXTS = new ArrayList<>();
+    private static final Map<JobDetail, Set<Trigger>> STORE = new ConcurrentHashMap<>();
 
     @Override
     public boolean storeJob(JobDetail job) {
-        return JOBS.add(job);
+        return false;
     }
 
     @Override
     public boolean storeTrigger(Trigger trigger) {
-        return TRIGGERS.add(trigger);
+        return false;
     }
 
     @Override
-    public boolean storeJobAndTrigger(JobDetail job, Trigger trigger) {
-        JobContext context = new JobContext();
-        context.setTrigger(trigger);
-        context.setJobDetail(job);
-
-        return JOB_CONTEXTS.add(context);
+    public void storeJobAndTrigger(JobDetail job, Trigger trigger) {
+        final Set<Trigger> set = STORE.getOrDefault(job, new HashSet<>());
+        set.add(trigger);
+        STORE.put(job, set);
     }
 
     @Override
-    public List<JobDetail> getJobs() {
-        return JOBS;
+    public void updateTrigger(JobDetail job, Trigger trigger) {
+        final Set<Trigger> set = STORE.getOrDefault(job, new HashSet<>());
+        set.remove(trigger);
+        set.add(trigger);
+        STORE.put(job, set);
     }
 
     @Override
-    public List<Trigger> getTriggers() {
-        return TRIGGERS;
+    public List<JobContext> getFiredJobContexts(Date now) {
+        List<JobContext> result = new ArrayList<>();
+
+        STORE.forEach((k, v) -> {
+            for (Trigger trigger : v) {
+                final Date nextFireTime = trigger.getNextFireTime();
+                if (nextFireTime == null || now.after(nextFireTime)) {
+                    result.add(new JobContext(k, trigger));
+                }
+            }
+        });
+
+        return result;
     }
 
-    @Override
-    public List<JobContext> getJobContexts() {
-        return JOB_CONTEXTS;
-    }
 
-    @Override
-    public boolean setJobContexts(List<JobContext> contexts) {
-        JOB_CONTEXTS.clear();
-        return JOB_CONTEXTS.addAll(contexts);
-    }
 }

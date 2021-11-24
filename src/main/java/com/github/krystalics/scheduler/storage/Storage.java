@@ -1,10 +1,10 @@
 package com.github.krystalics.scheduler.storage;
 
-import com.github.krystalics.scheduler.core.job.Job;
 import com.github.krystalics.scheduler.core.job.JobContext;
 import com.github.krystalics.scheduler.core.job.JobDetail;
 import com.github.krystalics.scheduler.core.trigger.Trigger;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -29,15 +29,10 @@ public interface Storage {
      */
     boolean storeTrigger(Trigger trigger);
 
-    boolean storeJobAndTrigger(JobDetail job, Trigger trigger);
+    void storeJobAndTrigger(JobDetail job, Trigger trigger);
 
 
-    List<JobDetail> getJobs();
+    void updateTrigger(JobDetail job, Trigger trigger);
 
-    List<Trigger> getTriggers();
-
-    List<JobContext> getJobContexts();
-
-    boolean setJobContexts(List<JobContext> contexts);
-
+    List<JobContext> getFiredJobContexts(Date now);
 }

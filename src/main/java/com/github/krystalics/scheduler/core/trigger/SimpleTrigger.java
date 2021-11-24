@@ -1,32 +1,29 @@
 package com.github.krystalics.scheduler.core.trigger;
 
-import lombok.Data;
-
 import java.util.Date;
-import java.util.Map;
 
 /**
  * @author linjiabao001
  * @date 2021/11/20
  * @description
  */
-@Data
-public class SimpleTrigger implements Trigger {
-    private String scheduleName;
-    private String jobName;
-    private String jobGroup;
-    private String triggerName;
-    private String triggerGroup;
-    private Date startTime;
-    private Date endTime;
-    private Date nextFireTime;
-    private Date previousFireTime;
+
+public class SimpleTrigger extends AbstractTrigger {
+
     private int repeatCount;
     private long repeatInterval;
-    private int timesTriggered;
-    private boolean complete;
-    private Map<String, Object> jobData;
 
+    SimpleTrigger(TriggerDetail.Builder detail) {
+        jobName = detail.jobName;
+        jobGroup = detail.jobGroup;
+        triggerName = detail.triggerName;
+        triggerGroup = detail.triggerGroup;
+        startTime = detail.startTime;
+        endTime = detail.endTime;
+
+        repeatCount = detail.repeatCount;
+        repeatInterval = detail.repeatInterval;
+    }
 
     @Override
     public Date getNextFireTime() {
@@ -46,4 +43,6 @@ public class SimpleTrigger implements Trigger {
         final long nextTime = prev.getTime() + repeatInterval;
         this.nextFireTime = new Date(nextTime);
     }
+
+
 }

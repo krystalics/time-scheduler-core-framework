@@ -4,9 +4,9 @@ import com.github.krystalics.scheduler.core.job.Job;
 import com.github.krystalics.scheduler.core.job.JobContext;
 import com.github.krystalics.scheduler.core.job.JobDetail;
 import com.github.krystalics.scheduler.core.trigger.SimpleTrigger;
+import com.github.krystalics.scheduler.core.trigger.TriggerDetail;
 import com.github.krystalics.scheduler.lock.JDBCLock;
 import com.github.krystalics.scheduler.storage.RamJobStorage;
-
 
 import java.util.Date;
 
@@ -27,16 +27,24 @@ public class TimeSchedulerTest {
      * 额外的线程在test中不起作用、于是写在了main里
      */
     public static void main(String[] args) {
-        JobDetail jobDetail = new JobDetail();
-        jobDetail.setJobClass(MyJob.class);
-        SimpleTrigger trigger = new SimpleTrigger();
-        trigger.setStartTime(new Date());
-        //设置3min的重复频率
-        trigger.setRepeatInterval(1000 * 60 * 3);
+        String jobGroup = "j-group1";
+        String jobName = "job1";
+        String triggerGroup = "t-group1";
+        String triggerName = "trigger1";
 
-        final TimeScheduler timeScheduler = new TimeScheduler();
-        timeScheduler.setStorageType(new RamJobStorage());
-        timeScheduler.setLock(new JDBCLock());
+        JobDetail jobDetail = new JobDetail.Builder(jobGroup, jobName)
+                .concurrent(true)
+                .jobClass(MyJob.class)
+                .build();
+
+        final SimpleTrigger trigger = new TriggerDetail.Builder(jobGroup, jobName, triggerGroup, triggerName)
+                .repeatInterval(1000 * 60)
+                .startTime(new Date())
+                .simpleBuild();
+
+
+        final TimeScheduler timeScheduler = new TimeScheduler(new RamJobStorage(), new JDBCLock());
+
         timeScheduler.start(jobDetail, trigger);
     }
 }
