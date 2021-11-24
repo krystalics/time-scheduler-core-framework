@@ -1,6 +1,6 @@
 package com.github.krystalics.scheduler;
 
-
+import com.github.krystalics.scheduler.core.executors.TimeSchedulerExecutors;
 import com.github.krystalics.scheduler.core.job.Job;
 import com.github.krystalics.scheduler.core.job.JobContext;
 import com.github.krystalics.scheduler.core.job.JobDetail;
@@ -91,9 +91,11 @@ public class TimeScheduler {
                 for (JobContext jobContext : jobContexts) {
                     if (!halted.get()) {
                         final Class<?> jobClass = jobContext.getJobDetail().getJobClass();
+                        //todo 将外界传入的job field参数通过反射传入
                         final Job job = (Job) jobClass.newInstance();
 
-                        job.execute(jobContext);
+                        TimeSchedulerExecutors.submit(() -> job.execute(jobContext));
+
                         //执行完成后，更新trigger的nextFiredTime
                         final Trigger trigger = jobContext.getTrigger();
                         trigger.updateNextFireTime(trigger.getNextFireTime());
