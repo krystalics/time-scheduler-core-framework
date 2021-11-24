@@ -5,28 +5,51 @@
 
 
 ```java
-public class Test {
+public class TimeSchedulerTest {
+
+    private static final Logger logger = LoggerFactory.getLogger(TimeSchedulerTest.class);
+
     static class MyJob implements Job {
         @Override
         public void execute(JobContext context) {
-            System.out.println(context.getTrigger().getNextFireTime());
+            logger.info(context.getTrigger().getTriggerName() + " " + context.getTrigger().getNextFireTime().toString());
         }
     }
 
     /**
-     * spi机制在test中不起作用、于是写在了main里
+     * 额外的线程在test中不起作用、于是写在了main里
      */
     public static void main(String[] args) {
-        JobDetail jobDetail = new JobDetail();
-        jobDetail.setJobClass(MyJob.class);
-        SimpleTrigger trigger = new SimpleTrigger();
-        trigger.setStartTime(new Date());
-        //设置3min的重复频率
-        trigger.setRepeatInterval(1000 * 60 * 3);
+        String jobGroup = "j-group1";
+        String jobName = "job1";
+        String triggerGroup = "t-group1";
+        String triggerName = "trigger1";
+        String triggerName2 = "trigger2";
 
-        final TimeScheduler timeScheduler = new TimeScheduler();
-        timeScheduler.setStorageType(new RamJobStorage());
-        timeScheduler.start(jobDetail, trigger);
+        JobDetail jobDetail = new JobDetail.Builder(jobGroup, jobName)
+                .concurrent(true)
+                .jobClass(MyJob.class)
+                .build();
+
+        SimpleTrigger trigger = new TriggerDetail.Builder(jobGroup, jobName, triggerGroup, triggerName)
+                .repeatInterval(1000 * 60)
+                .startTime(new Date())
+                .simpleBuild();
+
+
+        SimpleTrigger trigger2 = new TriggerDetail.Builder(jobGroup, jobName, triggerGroup, triggerName2)
+                .repeatInterval(1000 * 38)
+                .startTime(new Date())
+                .simpleBuild();
+
+
+        final TimeScheduler timeScheduler = new TimeScheduler(new RamJobStorage(), new JDBCLock());
+
+//        timeScheduler.storeJobAndTrigger(jobDetail, trigger);
+        timeScheduler.storeJobs(jobDetail);
+        timeScheduler.storeTriggers(trigger, trigger2);
+        timeScheduler.start();
     }
 }
+
 ```
