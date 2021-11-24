@@ -13,16 +13,11 @@ public class SimpleTrigger extends AbstractTrigger {
     private int repeatCount;
     private long repeatInterval;
 
-    SimpleTrigger(TriggerDetail.Builder detail) {
-        jobName = detail.jobName;
-        jobGroup = detail.jobGroup;
-        triggerName = detail.triggerName;
-        triggerGroup = detail.triggerGroup;
-        startTime = detail.startTime;
-        endTime = detail.endTime;
+    SimpleTrigger(TriggerDetail.Builder builder) {
+        super(builder);
 
-        repeatCount = detail.repeatCount;
-        repeatInterval = detail.repeatInterval;
+        repeatCount = builder.repeatCount;
+        repeatInterval = builder.repeatInterval;
     }
 
     @Override

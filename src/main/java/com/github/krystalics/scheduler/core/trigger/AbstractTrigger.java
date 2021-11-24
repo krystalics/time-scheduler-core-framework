@@ -21,6 +21,14 @@ public abstract class AbstractTrigger implements Trigger {
     protected Date previousFireTime;
     protected boolean complete;
 
+    public AbstractTrigger(TriggerDetail.Builder builder) {
+        this.jobName = builder.jobName;
+        this.jobGroup = builder.jobGroup;
+        this.triggerName = builder.triggerName;
+        this.triggerGroup = builder.triggerGroup;
+        this.startTime = builder.startTime;
+        this.endTime = builder.endTime;
+    }
 
     @Override
     public boolean equals(Object o) {
