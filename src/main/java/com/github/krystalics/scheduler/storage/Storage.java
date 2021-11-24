@@ -17,17 +17,15 @@ public interface Storage {
      * 存储job
      *
      * @param job
-     * @return
      */
-    boolean storeJob(JobDetail job);
+    void storeJob(JobDetail job);
 
     /**
      * 存储Trigger
      *
      * @param trigger
-     * @return
      */
-    boolean storeTrigger(Trigger trigger);
+    void storeTrigger(Trigger trigger);
 
     void storeJobAndTrigger(JobDetail job, Trigger trigger);
 

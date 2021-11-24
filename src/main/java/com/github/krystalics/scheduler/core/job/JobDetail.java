@@ -28,8 +28,8 @@ public class JobDetail {
         jobData = builder.jobData;
     }
 
-   public static class Builder {
-        public Builder(String jobName, String jobGroup) {
+    public static class Builder {
+        public Builder(String jobGroup, String jobName) {
             this.jobName = jobName;
             this.jobGroup = jobGroup;
         }

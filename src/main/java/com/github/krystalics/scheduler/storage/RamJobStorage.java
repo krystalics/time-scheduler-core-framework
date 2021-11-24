@@ -22,13 +22,17 @@ public class RamJobStorage implements Storage {
     private static final Map<JobDetail, Set<Trigger>> STORE = new ConcurrentHashMap<>();
 
     @Override
-    public boolean storeJob(JobDetail job) {
-        return false;
+    public void storeJob(JobDetail job) {
+        STORE.put(job, new HashSet<>());
     }
 
     @Override
-    public boolean storeTrigger(Trigger trigger) {
-        return false;
+    public void storeTrigger(Trigger trigger) {
+        JobDetail job = new JobDetail.Builder(trigger.getJobGroup(), trigger.getJobName()).build();
+        STORE.computeIfPresent(job, (k, v) -> {
+            v.add(trigger);
+            return v;
+        });
     }
 
     @Override

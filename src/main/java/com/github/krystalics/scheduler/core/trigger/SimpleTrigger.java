@@ -8,7 +8,7 @@ import java.util.Date;
  * @description
  */
 
-public class SimpleTrigger extends AbstractTrigger {
+public class SimpleTrigger extends Trigger {
 
     private int repeatCount;
     private long repeatInterval;
@@ -23,7 +23,11 @@ public class SimpleTrigger extends AbstractTrigger {
     @Override
     public Date getNextFireTime() {
         if (nextFireTime == null) {
-            nextFireTime = startTime;
+            if (startTime == null) {
+
+            } else {
+                nextFireTime = startTime;
+            }
         } else {
             return nextFireTime;
         }

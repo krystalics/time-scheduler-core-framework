@@ -19,7 +19,7 @@ public class TimeSchedulerTest {
     static class MyJob implements Job {
         @Override
         public void execute(JobContext context) {
-            System.out.println(context.getTrigger().getNextFireTime());
+            System.out.println(context.getTrigger().toString());
         }
     }
 
@@ -31,20 +31,30 @@ public class TimeSchedulerTest {
         String jobName = "job1";
         String triggerGroup = "t-group1";
         String triggerName = "trigger1";
+        String triggerName2 = "trigger2";
 
         JobDetail jobDetail = new JobDetail.Builder(jobGroup, jobName)
                 .concurrent(true)
                 .jobClass(MyJob.class)
                 .build();
 
-        final SimpleTrigger trigger = new TriggerDetail.Builder(jobGroup, jobName, triggerGroup, triggerName)
+        SimpleTrigger trigger = new TriggerDetail.Builder(jobGroup, jobName, triggerGroup, triggerName)
                 .repeatInterval(1000 * 60)
+                .startTime(new Date())
+                .simpleBuild();
+
+
+        SimpleTrigger trigger2 = new TriggerDetail.Builder(jobGroup, jobName, triggerGroup, triggerName2)
+                .repeatInterval(1000 * 30)
                 .startTime(new Date())
                 .simpleBuild();
 
 
         final TimeScheduler timeScheduler = new TimeScheduler(new RamJobStorage(), new JDBCLock());
 
-        timeScheduler.start(jobDetail, trigger);
+//        timeScheduler.storeJobAndTrigger(jobDetail, trigger);
+        timeScheduler.storeJobs(jobDetail);
+        timeScheduler.storeTriggers(trigger, trigger2);
+        timeScheduler.start();
     }
 }

@@ -35,18 +35,28 @@ public class TimeScheduler {
 
     TimeSchedulerThread scheduler;
 
-    public void start(JobDetail job, Trigger trigger) {
-        storage.storeJobAndTrigger(job, trigger);
-
+    public void start() {
         scheduler = new TimeSchedulerThread();
         scheduler.start();
     }
 
-    private void storeJobAndTrigger(JobDetail job, Trigger trigger) {
+    public void storeJobAndTrigger(JobDetail job, Trigger trigger) {
         storage.storeJob(job);
         storage.storeTrigger(trigger);
     }
 
+
+    public void storeJobs(JobDetail... jobs) {
+        for (JobDetail job : jobs) {
+            storage.storeJob(job);
+        }
+    }
+
+    public void storeTriggers(Trigger... triggers) {
+        for (Trigger trigger : triggers) {
+            storage.storeTrigger(trigger);
+        }
+    }
 
     /**
      * keypoint

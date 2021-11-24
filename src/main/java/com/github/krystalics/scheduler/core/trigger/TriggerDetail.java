@@ -48,7 +48,7 @@ public class TriggerDetail {
         public int repeatCount;
         public long repeatInterval;
 
-        public Builder(String jobName, String jobGroup, String triggerName, String triggerGroup) {
+        public Builder(String jobGroup, String jobName, String triggerGroup, String triggerName) {
             this.jobName = jobName;
             this.jobGroup = jobGroup;
             this.triggerName = triggerName;
