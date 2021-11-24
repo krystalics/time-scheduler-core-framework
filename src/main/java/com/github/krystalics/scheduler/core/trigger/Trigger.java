@@ -1,5 +1,7 @@
 package com.github.krystalics.scheduler.core.trigger;
 
+import lombok.Data;
+
 import java.util.Date;
 
 /**
@@ -7,6 +9,7 @@ import java.util.Date;
  * @date 2021/11/24
  * @description
  */
+@Data
 public abstract class Trigger {
     protected String jobName;
     protected String jobGroup;

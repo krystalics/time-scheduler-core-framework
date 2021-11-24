@@ -7,6 +7,8 @@ import com.github.krystalics.scheduler.core.trigger.SimpleTrigger;
 import com.github.krystalics.scheduler.core.trigger.TriggerDetail;
 import com.github.krystalics.scheduler.lock.JDBCLock;
 import com.github.krystalics.scheduler.storage.RamJobStorage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Date;
 
@@ -16,10 +18,13 @@ import java.util.Date;
  * @description
  */
 public class TimeSchedulerTest {
+
+    private static final Logger logger = LoggerFactory.getLogger(TimeSchedulerTest.class);
+
     static class MyJob implements Job {
         @Override
         public void execute(JobContext context) {
-            System.out.println(context.getTrigger().toString());
+            logger.info(context.getTrigger().getTriggerName() + " " + context.getTrigger().getNextFireTime().toString());
         }
     }
 
@@ -45,7 +50,7 @@ public class TimeSchedulerTest {
 
 
         SimpleTrigger trigger2 = new TriggerDetail.Builder(jobGroup, jobName, triggerGroup, triggerName2)
-                .repeatInterval(1000 * 30)
+                .repeatInterval(1000 * 38)
                 .startTime(new Date())
                 .simpleBuild();
 

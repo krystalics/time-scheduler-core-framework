@@ -44,4 +44,20 @@ public class SimpleTrigger extends Trigger {
     }
 
 
+    @Override
+    public String toString() {
+        return "SimpleTrigger{" +
+                "repeatCount=" + repeatCount +
+                ", repeatInterval=" + repeatInterval +
+                ", jobName='" + jobName + '\'' +
+                ", jobGroup='" + jobGroup + '\'' +
+                ", triggerName='" + triggerName + '\'' +
+                ", triggerGroup='" + triggerGroup + '\'' +
+                ", startTime=" + startTime +
+                ", endTime=" + endTime +
+                ", nextFireTime=" + nextFireTime +
+                ", previousFireTime=" + previousFireTime +
+                ", complete=" + complete +
+                '}';
+    }
 }
