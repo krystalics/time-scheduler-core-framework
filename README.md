@@ -1,5 +1,4 @@
-目标：生产可用的分布式定时调度器
-- 
+
 已支持特性:</br>
 1.job、多trigger 简单重复运行完成</br>
 2.</br>
@@ -10,6 +9,7 @@ todo list</br>
 3.对于cron的支持</br>
 4.任务手动重跑历史的记录，如何确保幂等性</br>
 5.集群分布式特性
+6.对于错过了执行周期的任务，如何补救？
 
 ```java
 public class TimeSchedulerTest {
